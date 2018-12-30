@@ -7,6 +7,8 @@ from IPython.display import display, clear_output
 
 from sympy import *
 
+import ipywidgets as widgets
+
 
 
 #Symbols
