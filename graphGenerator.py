@@ -112,7 +112,7 @@ def graphRatio(distance, minRatio, maxRatio, stall_torque, motor_num, stall_curr
     index = time.index(minTime)
     minRatio = ratios[index]
 
-    label = 'Min: %.1f:1 (%.3fs)' %(minRatio, minTime)
+    label = 'Min: %.1f:1 (%.3fs)\nComputed by GearRatioOptimizer\nNicolas Eichenberger' %(minRatio, minTime)
     ax.plot(ratios, time, label=label, color='blue')
     ax.plot(minRatio, minTime, '-o', color='blue')
 
