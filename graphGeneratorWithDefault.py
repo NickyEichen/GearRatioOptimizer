@@ -52,7 +52,7 @@ workingAcel2 = workingAcel.subs(w, wDef)
 workingAcel3 = workingAcel2.subs([(km, KmDef), (ke, KeDef), (rm, RmDef), (Tf, TfDef)])
 
 
-def graphRatio(distance, mass, 
+def graphRatio(distance_min, distance_max, mass, 
                motor_num, motor_type, free_speed, no_load_current, stall_torque, stall_current,
                wheel_type, radius, wheel_efficiency, inertia, 
                nominal_voltage,  operating_voltage, batery_resistance, 
@@ -108,25 +108,37 @@ def graphRatio(distance, mass,
     def updateStatus(ratio):
         progressBar.value = ratio
         return None
-        
+    
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ratios = np.arange(minRatio, maxRatio, .1)
 
-    time = [updateStatus(x) or timeAtRatio(distance, x) for x in ratios]
+    def computeForDist(distance, plotColor, first, last):
+        time = [updateStatus(x) or timeAtRatio(distance, x) for x in ratios]
+        minTime = min(time)
+        index = time.index(minTime)
+        minRatio = ratios[index]
+        label = 'Dist %.1fm, Min %.1f:1 @ %.3fs' %(distance, minRatio, minTime)
+        if first:
+            label = "<Model by Nicolas Eichenberger>\n" + label
+        if last:
+            label = label + "\n<Computed by GearRatioOptimizer>"
+        ax.plot(ratios, time, label=label, color=plotColor)
+        ax.plot(minRatio, minTime, '-o', color=plotColor)
 
-    minTime = min(time)
-    index = time.index(minTime)
-    minRatio = ratios[index]
+    if distance_min >= distance_max:
+        computeForDist(distance_min, 'blue', True, True)
+    else:
+        computeForDist(distance_max, 'red', True, False)
+        if distance_max - distance_min >= 0.3:
+            computeForDist((distance_max+distance_min)/2, 'green', False, False)
+        computeForDist(distance_min, 'blue', False, True)
 
-    label = 'Min: %.1f:1 (%.3fs)\nComputed by GearRatioOptimizer\nby Nicolas Eichenberger' %(minRatio, minTime)
-    ax.plot(ratios, time, label=label, color='blue')
-    ax.plot(minRatio, minTime, '-o', color='blue')
 
     ax.set_xlabel("Gear Reduction", fontsize=15)
     ax.set_ylabel("Time", fontsize=18)
     ax.legend(loc="best")
-    ax.set_title('%s  |  Mass = %.1f lbs | Dist = %.1f m' %(wheelType, mass_lbs, distance), fontsize=13)
+    ax.set_title('%s  |  Mass = %.1f lbs | Dist = %.1f-%.1fm' %(wheelType, mass_lbs, distance_min, distance_max), fontsize=13)
     ax.margins(0.1)
     fig.tight_layout()
     

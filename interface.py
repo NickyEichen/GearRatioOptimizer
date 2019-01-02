@@ -7,7 +7,8 @@ layout_hidden=widgets.Layout(visibility="visible") # visible or hidden
 disabled_true = True
 
         
-distance_w = widgets.FloatText(value=0.8, description='Distance (m): ', style=style)
+distance_min_w = widgets.FloatText(value=0.3, description='Min Distance (m): ', style=style)
+distance_max_w = widgets.FloatText(value=0.8, description='Max Distance (m): ', style=style)
 mass_w = widgets.FloatText(value=30, description='Robot Mass (lbs): ', style=style)
 
 motor_num_w = FloatText(value=4, description='Number of Motors: ', style=style)
@@ -20,12 +21,10 @@ motor_type_w = widgets.Dropdown(options=[("AndyMark NeveRest", "nr"),
                                 description="Motor Type: ",
                                 value="nr", style=style)
 def update_widget_m(w, d):
-    w.value = d[motor_type_w.value]
     if motor_type_w.value == "other_m":
-        #w.layout.visibility = "visible"
         w.disabled = False
     else:
-        #w.layout.visibility = "hidden"
+        w.value = d[motor_type_w.value]
         w.disabled = True
 
 # motor data from https://motors.vex.com
@@ -89,12 +88,10 @@ wheel_type_w = widgets.Dropdown(options=[("AndyMark Standard Mecanum 4in", "am_s
                                 description="Wheel Type: ",
                                 value="am_sm4", style=style)
 def update_widget_w(w, d):
-    w.value = d[wheel_type_w.value]
     if wheel_type_w.value == "other_w":
-        #w.layout.visibility = "visible"
         w.disabled = False
     else:
-        #w.layout.visibility = "hidden"
+        w.value = d[wheel_type_w.value]
         w.disabled = True
 
 
@@ -168,7 +165,8 @@ wheel_type_w.observe(update_intertia, 'value')
 
 
 interact_manual(graphRatio, 
-                distance = distance_w,
+                distance_min = distance_min_w,
+                distance_max = distance_max_w,
                 mass = mass_w,
                 motor_num = motor_num_w,
                 motor_type = motor_type_w,
