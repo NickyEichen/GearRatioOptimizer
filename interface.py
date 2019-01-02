@@ -95,24 +95,24 @@ def update_widget_w(w, d):
         w.disabled = True
 
 
-def compute_inertia(mass, radius): # mm * gr
-    return (mass/100) * (radius/1000) * (radius/1000) / 2
+def compute_inertia(diameter, mass): # gr and inch -> kg and meter
+    return (0.5 * (mass/1000) * ((diameter/2)*0.0254) * ((diameter/2)*0.0254))
 
-radius_default = {"am_sm4" :  50.8,
-                  "am_hdm4":  50.8,
-                  "am_do4":   50.8,
-                  "am_sw4":   50.8,
-                  "n_m4":     50,
-                  "vp_m4":    50.8,
-                  "vp_c48":   50.8,
-                  "vp_c415":  50.8,
-                  "vp_c3515": 88.9/2,
-                  "vp_c38":   76.2/2,
-                  "vp_c315":  76.2/2,
-                  "vp_o325":  82.6/2,
-                  "vp_o4":    50.8,
-                  "bb_t8375": 95.2/2,
-                  "other_w":  50.8}
+diameter_default = {"am_sm4": 4,
+                  "am_hdm4":  4,
+                  "am_do4":   4,
+                  "am_sw4":   4,
+                  "n_m4":     3.94,
+                  "vp_m4":    4,
+                  "vp_c48":   4,
+                  "vp_c415":  4,
+                  "vp_c3515": 3.5,
+                  "vp_c38":   3,
+                  "vp_c315":  3,
+                  "vp_o325":  3.25,
+                  "vp_o4":    4,
+                  "bb_t8375": 3.75,
+                  "other_w":  4}
 wheel_efficiency_default = {"am_sm4" :  0.7,
                             "am_hdm4":  0.7,
                             "am_do4":   1,
@@ -128,27 +128,27 @@ wheel_efficiency_default = {"am_sm4" :  0.7,
                             "vp_o4":    1,
                             "bb_t8375": 1,
                             "other_w":  1}
-intertia_default = {"am_sm4" : compute_inertia(50.8,   158),
-                    "am_hdm4": compute_inertia(50.8,   400),
-                    "am_do4":  compute_inertia(50.8,   268),
-                    "am_sw4":  compute_inertia(50.8,   108),
-                    "n_m4":    compute_inertia(50.8,   400),
-                    "vp_m4":    compute_inertia(50.8,   249),
-                    "vp_c48":   compute_inertia(50.8,   118),
-                    "vp_c415":  compute_inertia(50.8,   240),
-                    "vp_c3515": compute_inertia(88.9/2, 145),
-                    "vp_c38":   compute_inertia(76.2/2, 72),
-                    "vp_c315":  compute_inertia(76.2/2, 150),
-                    "vp_o325":  compute_inertia(82.6/2, 177),
-                    "vp_o4":    compute_inertia(50.8,   236),
-                    "bb_t8375": compute_inertia(95.2/2, 113),
-                    "other_w":  compute_inertia(50.8,   100)}
+intertia_default = {"am_sm4" :  compute_inertia(4,    158),
+                    "am_hdm4":  compute_inertia(4,    400),
+                    "am_do4":   compute_inertia(4,    268),
+                    "am_sw4":   compute_inertia(4,    108),
+                    "n_m4":     compute_inertia(3.94, 400),
+                    "vp_m4":    compute_inertia(4,    249),
+                    "vp_c48":   compute_inertia(4,    118),
+                    "vp_c415":  compute_inertia(4,    240),
+                    "vp_c3515": compute_inertia(3.5,  145),
+                    "vp_c38":   compute_inertia(3,    72),
+                    "vp_c315":  compute_inertia(3,    150),
+                    "vp_o325":  compute_inertia(3.25, 177),
+                    "vp_o4":    compute_inertia(4,    236),
+                    "bb_t8375": compute_inertia(3.75, 113),
+                    "other_w":  compute_inertia(4,    100)}
 
-radius_w = FloatText(value=radius_default["am_sm4"], description='---- Radius (mm): ',
+diameter_w = FloatText(value=diameter_default["am_sm4"], description='---- Diameter (in): ',
                      style=style, layout=layout_hidden, disabled=disabled_true)
-def update_radius(*args):
-    update_widget_w(radius_w, radius_default);
-wheel_type_w.observe(update_radius, 'value')
+def update_diameter(*args):
+    update_widget_w(diameter_w, diameter_default);
+wheel_type_w.observe(update_diameter, 'value')
 
 
 wheel_efficiency_w = FloatText(value=wheel_efficiency_default["am_sm4"], description='---- Efficiency: ',
@@ -163,6 +163,8 @@ def update_intertia(*args):
     update_widget_w(intertia_w, intertia_default);
 wheel_type_w.observe(update_intertia, 'value')
 
+intertia_drivetrain_w = FloatText(value=0, description='---- Add. Drivetrain Inertia (kg m^2): ',
+                       style=style)
 
 interact_manual(graphRatio, 
                 distance_min = distance_min_w,
@@ -175,8 +177,9 @@ interact_manual(graphRatio,
                 free_speed = free_speed_w,
 
                 wheel_type = wheel_type_w,
-                radius = radius_w,
-                inertia = intertia_w,                
+                diameter = diameter_w,
+                inertia = intertia_w,
+                intertia_drivetrain = intertia_drivetrain_w,
                 wheel_efficiency = wheel_efficiency_w,
 
                 minRatio = minRatio_w,

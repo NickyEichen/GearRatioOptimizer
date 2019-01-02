@@ -54,14 +54,15 @@ workingAcel3 = workingAcel2.subs([(km, KmDef), (ke, KeDef), (rm, RmDef), (Tf, Tf
 
 def graphRatio(distance_min, distance_max, mass, 
                motor_num, motor_type, free_speed, no_load_current, stall_torque, stall_current,
-               wheel_type, radius, wheel_efficiency, inertia, 
+               wheel_type, diameter, wheel_efficiency, inertia, intertia_drivetrain, 
                nominal_voltage,  operating_voltage, batery_resistance, 
                minRatio, maxRatio,   
                ):
     # conversions
     mass_lbs = mass
     mass = mass / 2.20462 # lbs to kg
-    radius = radius / 1000 # mm to m
+    radius = (diameter / 2) * 0.0254 # inch to m
+    inertia += intertia_drivetrain
     
     def aceleration(vel, gratio):
         return FVAL*gratio + SVAL *gratio*gratio*vel
